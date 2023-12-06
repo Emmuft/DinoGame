@@ -3,7 +3,6 @@ import os
 import random
 
 pygame.init()
-a = 0
 HEIGHT = 500
 WIDTH = 900
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
