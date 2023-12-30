@@ -4,6 +4,7 @@ import random
 import sys
 
 pygame.init()
+
 HEIGHT = 500
 WIDTH = 900
 FPS = 90
@@ -29,7 +30,7 @@ BIRD = [pygame.image.load("data/Bird/Bird1.png"),
         pygame.image.load("data/Bird/Bird2.png")]
 CLOUD = pygame.image.load("data/Other/Cloud.png")
 ROAD = pygame.image.load("data/Other/Track.png")
-
+ROCKET = pygame.image.load("data/angara_1.png")
 
 while running:
     class Dinosaur:
@@ -105,18 +106,16 @@ while running:
             SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
 
-    class Cloud:
+    class Rocket:
         def __init__(self):
-            self.x = WIDTH + random.randint(800, 1000)
-            self.y = random.randint(50, 100)
-            self.image = CLOUD
+            self.x = WIDTH
+            self.y = 135
+            self.image = ROCKET
             self.width = self.image.get_width()
 
         def update(self):
             self.x -= game_speed
-            if self.x < -self.width:
-                self.x = WIDTH + random.randint(2500, 3000)
-                self.y = random.randint(50, 100)
+
 
         def draw(self, SCREEN):
             SCREEN.blit(self.image, (self.x, self.y))
@@ -167,28 +166,27 @@ while running:
 
 
     def main():
-        global game_speed, x_pos_bg, y_pos_bg, points, obstacles, po
+        global game_speed, x_pos_bg, y_pos_bg, points, obstacles, count_points
         run = True
         clock = pygame.time.Clock()
         player = Dinosaur()
-        cloud = Cloud()
+        rocket = Rocket()
         game_speed = 15
         x_pos_bg = 0
         y_pos_bg = 380
         points = 0
-        po = 0
+        count_points = 0
         font = pygame.font.Font("data/Icon and font/EpilepsySans.ttf", 30)
         obstacles = []
         death_count = 0
 
         def score():
-            global points, game_speed, po
-            po += 1
-            if po % 4 == 0:
+            global points, game_speed, count_points
+            count_points += 1
+            if count_points % 2 == 0:
                 points += 1
-                if points % 100 == 0:
-                    game_speed += 1
-
+            if points % 100 == 0:
+                game_speed += 1
             text = font.render("Очки: " + str(points), True, (0, 0, 0))
             textRect = text.get_rect()
             textRect.center = (780, 40)
@@ -215,26 +213,27 @@ while running:
             player.draw(SCREEN)
             player.update(userInput)
 
-            if len(obstacles) == 0:
-                if random.randint(0, 2) == 0:
-                    obstacles.append(SmallCactus(SMALL_CACTUS))
-                elif random.randint(0, 2) == 1:
-                    obstacles.append(LargeCactus(BIG_CACTUS))
-                elif random.randint(0, 2) == 2:
-                    obstacles.append(Bird(BIRD))
-
+            if points < 100:
+                if len(obstacles) == 0:
+                    if random.randint(0, 2) == 0:
+                        obstacles.append(SmallCactus(SMALL_CACTUS))
+                    elif random.randint(0, 2) == 1:
+                        obstacles.append(LargeCactus(BIG_CACTUS))
+                    elif random.randint(0, 2) == 2:
+                        obstacles.append(Bird(BIRD))
             for obstacle in obstacles:
                 obstacle.draw(SCREEN)
                 obstacle.update()
                 if player.dino_rect.colliderect(obstacle.rect):
-                    pygame.time.delay(300)
+                    pygame.time.delay(100)
                     death_count += 1
                     menu(death_count)
 
-            background()
+            if points >= 145:
+                rocket.draw(SCREEN)
+                rocket.update()
 
-            cloud.draw(SCREEN)
-            cloud.update()
+            background()
 
             score()
 
@@ -272,5 +271,7 @@ while running:
                     run = False
                 if event.type == pygame.KEYDOWN:
                     main()
+
+
     menu(death_count=0)
     clock.tick(FPS)
