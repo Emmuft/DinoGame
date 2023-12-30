@@ -205,7 +205,7 @@ while running:
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    exit()
 
             SCREEN.fill((255, 255, 255))
             userInput = pygame.key.get_pressed()
@@ -268,7 +268,7 @@ while running:
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    exit()
                 if event.type == pygame.KEYDOWN:
                     main()
 
