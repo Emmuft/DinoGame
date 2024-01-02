@@ -276,7 +276,7 @@ while running:
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    exit()
                 if event.type == pygame.KEYDOWN:
                     main()
 
