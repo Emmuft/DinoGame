@@ -1,8 +1,7 @@
 import pygame
 import os
 import random
-
-
+from pyvidplayer import Video
 import sys
 
 pygame.init()
@@ -33,11 +32,15 @@ BIRD = [pygame.image.load("data/Bird/Bird1.png"),
 CLOUD = pygame.image.load("data/Other/Cloud.png")
 ROAD = pygame.image.load("data/Other/Track.png")
 ROCKET = pygame.image.load("data/angara_1.png")
+music_jump = pygame.mixer.Sound("music/jump.mp3")
+music_hundred = pygame.mixer.Sound("music/hundredpoints.mp3")
+music_dead = pygame.mixer.Sound("music/dead.mp3")
+background_music = pygame.mixer.Sound("music/backgroundmusic.mp3")
 
 while running:
     class Dinosaur:
         X_POS = 80
-        Y_POS = 310
+        Y_POS = 305
         Y_POS_DUCK = 340
         JUMP_VEL = 8.5
 
@@ -69,6 +72,7 @@ while running:
                 self.step_index = 0
 
             if userInput[pygame.K_UP] and not self.dino_jump:
+                music_jump.play()
                 self.dino_duck = False
                 self.dino_run = False
                 self.dino_jump = True
@@ -122,13 +126,29 @@ while running:
             SCREEN.blit(self.image, self.rect)
 
 
+    class Cloud:
+        def __init__(self):
+            self.x = WIDTH + random.randint(300, 500)
+            self.y = random.randint(50, 300)
+            self.image = CLOUD
+            self.width = self.image.get_width()
+
+        def update(self):
+            self.x -= game_speed
+            if self.x < -self.width:
+                self.x = WIDTH + random.randint(300, 500)
+                self.y = random.randint(50, 300)
+
+        def draw(self, SCREEN):
+            SCREEN.blit(self.image, (self.x, self.y))
+
+
     class Obstacle:
         def __init__(self, image, type):
             self.image = image
             self.type = type
             self.rect = self.image[self.type].get_rect()
             self.rect.x = WIDTH
-
 
         def update(self):
             self.rect.x -= game_speed
@@ -173,6 +193,8 @@ while running:
         clock = pygame.time.Clock()
         player = Dinosaur()
         rocket = Rocket()
+        cloud = Cloud()
+        background_music.play(-1)
         game_speed = 15
         x_pos_bg = 0
         y_pos_bg = 380
@@ -187,8 +209,9 @@ while running:
             count_points += 1
             if count_points % 2 == 0:
                 points += 1
-            if points % 100 == 0:
-                game_speed += 1
+            if points % 100 == 0 and points != 0:
+                music_hundred.play()
+                game_speed += 0.5
             text = font.render("Очки: " + str(points), True, (0, 0, 0))
             textRect = text.get_rect()
             textRect.center = (780, 40)
@@ -210,10 +233,13 @@ while running:
                     run = False
 
             SCREEN.fill((255, 255, 255))
+            pygame.draw.rect(SCREEN, (252, 221, 118), pygame.Rect(0, 390, 900, 150))
             userInput = pygame.key.get_pressed()
 
             player.draw(SCREEN)
             player.update(userInput)
+            cloud.draw(SCREEN)
+            cloud.update()
 
             if points < 100:
                 if len(obstacles) == 0:
@@ -227,19 +253,28 @@ while running:
                 obstacle.draw(SCREEN)
                 obstacle.update()
                 if player.dino_rect.colliderect(obstacle.rect):
+                    background_music.stop()
+                    music_dead.play()
                     pygame.time.delay(100)
                     death_count += 1
                     menu(death_count)
 
-            if points >= 145:
+            if points >= 120:
                 rocket.draw(SCREEN)
                 rocket.update()
                 if player.dino_rect.colliderect(rocket.rect):
+                    background_music.stop()
                     pygame.time.delay(150)
-                    import Moon
-                    Moon.main()
-
-
+                    vid = Video("music/AnimationRocket.mp4")
+                    vid.set_size((900, 500))
+                    while True:
+                        vid.draw(SCREEN, (0, 0))
+                        pygame.display.update()
+                        for event in pygame.event.get():
+                            if event.type == pygame.KEYDOWN:
+                                vid.close()
+                                import Moon
+                                Moon.main()
 
             background()
 

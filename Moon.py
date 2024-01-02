@@ -31,6 +31,10 @@ COMET = [pygame.image.load("data/comet/Comet1.png"),
          pygame.image.load("data/comet/Comet5.png")]
 ROAD = pygame.image.load("data/Other/Track.png")
 FONE = pygame.image.load("data/Stone_and_other/fone.png")
+music_jump = pygame.mixer.Sound("music/jump.mp3")
+music_hundred = pygame.mixer.Sound("music/hundredpoints.mp3")
+music_dead = pygame.mixer.Sound("music/dead.mp3")
+background_music = pygame.mixer.Sound("music/backgroundMoon_music.mp3")
 
 while running:
     class Dinosaur:
@@ -67,6 +71,7 @@ while running:
                 self.step_index = 0
 
             if userInput[pygame.K_UP] and not self.dino_jump:
+                music_jump.play()
                 self.dino_duck = False
                 self.dino_run = False
                 self.dino_jump = True
@@ -155,6 +160,7 @@ while running:
         run = True
         clock = pygame.time.Clock()
         player = Dinosaur()
+        background_music.play(-1)
         game_speed = 15
         x_pos_bg = 0
         y_pos_bg = 380
@@ -169,8 +175,9 @@ while running:
             count_points += 1
             if count_points % 2 == 0:
                 points += 1
-            if points % 100 == 0:
-                game_speed += 1
+            if points % 100 == 0 and points != 0:
+                music_hundred.play()
+                game_speed += 0.5
             text = font.render("Очки: " + str(points), True, (255, 255, 255))
             textRect = text.get_rect()
             textRect.center = (780, 40)
@@ -191,8 +198,8 @@ while running:
                 if event.type == pygame.QUIT:
                     run = False
 
-            SCREEN.fill((20,21,41))
-            SCREEN.blit(FONE, (WIDTH//50, HEIGHT//500))
+            SCREEN.fill((20, 21, 41))
+            SCREEN.blit(FONE, (WIDTH // 50, HEIGHT // 500))
             pygame.draw.rect(SCREEN, (128, 128, 128), pygame.Rect(0, 390, 900, 150))
             userInput = pygame.key.get_pressed()
 
@@ -208,6 +215,8 @@ while running:
                 obstacle.draw(SCREEN)
                 obstacle.update()
                 if player.dino_rect.colliderect(obstacle.rect):
+                    background_music.stop()
+                    music_dead.play()
                     pygame.time.delay(100)
                     death_count += 1
                     menu(death_count)
@@ -242,7 +251,7 @@ while running:
             SCREEN.blit(STONE[1], (WIDTH // 2 + 200, HEIGHT // 2 + 153))
             SCREEN.blit(STONE[2], (WIDTH // 2 + 20, HEIGHT // 2 + 153))
             SCREEN.blit(COMET[0], (WIDTH // 2 + 200, HEIGHT // 2 - 190))
-            SCREEN.blit(JUMPING, (WIDTH // 2 -200, HEIGHT // 2 - 95))
+            SCREEN.blit(JUMPING, (WIDTH // 2 - 200, HEIGHT // 2 - 95))
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
