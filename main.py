@@ -241,7 +241,7 @@ while running:
             cloud.draw(SCREEN)
             cloud.update()
 
-            if points < 1970:
+            if points < 100:
                 if len(obstacles) == 0:
                     if random.randint(0, 2) == 0:
                         obstacles.append(SmallCactus(SMALL_CACTUS))
@@ -259,13 +259,13 @@ while running:
                     death_count += 1
                     menu(death_count)
 
-            if points >= 1990:
+            if points >= 120:
                 rocket.draw(SCREEN)
                 rocket.update()
                 if player.dino_rect.colliderect(rocket.rect):
                     background_music.stop()
                     pygame.time.delay(150)
-                    vid = Video("AnimationRocket.mp4")
+                    vid = Video("music/AnimationRocket.mp4")
                     vid.set_size((900, 500))
                     while True:
                         vid.draw(SCREEN, (0, 0))
