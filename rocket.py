@@ -2,8 +2,6 @@ import pygame
 import os
 import time
 import random
-import math
-
 # Инициализация Pygame
 pygame.init()
 
@@ -55,6 +53,8 @@ flag_buster = False
 flag_stage = False
 buster_angle_variable = 0
 buster_angle_variable_right = 0
+angle_rocket_checklist = list()
+check_end = False
 
 # Настройка переменных для вращения
 angle_yaw = 0  # Начальный угол
@@ -156,6 +156,63 @@ while running:
             stage_x -= 1  # Движение бустера влево
             stage_offset += 1  # Увеличение смещения бустера
     # Обновление дисплея
+    if 0 < velocity < 1:
+        angle_text = font.render(f"Требуемый угол: {0} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == 0 and len(angle_rocket_checklist) == 0:
+            angle_rocket_checklist.append("checkmark_1")
+
+    if 1 < velocity < 2:
+        angle_text = font.render(f"Требуемый угол: {15} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -15 and len(angle_rocket_checklist) == 1:
+            angle_rocket_checklist.append("checkmark_2")
+
+    if 2 < velocity < 3:
+        angle_text = font.render(f"Требуемый угол: {30} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -30 and len(angle_rocket_checklist) == 2:
+            angle_rocket_checklist.append("checkmark_3")
+
+    if 3 < velocity < 4:
+        angle_text = font.render(f"Требуемый угол: {45} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -45 and len(angle_rocket_checklist) == 3:
+            angle_rocket_checklist.append("checkmark_4")
+
+    if 4 < velocity < 5:
+        angle_text = font.render(f"Требуемый угол: {60} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -60 and len(angle_rocket_checklist) == 4:
+            angle_rocket_checklist.append("checkmark_5")
+
+    if 5 < velocity < 6:
+        angle_text = font.render(f"Требуемый угол: {75} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -75 and len(angle_rocket_checklist) == 5:
+            angle_rocket_checklist.append("checkmark_6")
+
+    if 6 < velocity < 7:
+        angle_text = font.render(f"Требуемый угол: {80} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -80 and len(angle_rocket_checklist) == 6:
+            angle_rocket_checklist.append("checkmark_7")
+
+    if 7 < velocity < 8:
+        angle_text = font.render(f"Требуемый угол: {85} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -85 and len(angle_rocket_checklist) == 7:
+            angle_rocket_checklist.append("checkmark_8")
+
+    if 8 < velocity < 11:
+        angle_text = font.render(f"Требуемый угол: {90} градусов", True, (255, 255, 255))
+        win.blit(angle_text, (275, 10))
+        if int(angle_yaw) == -90 and len(angle_rocket_checklist) == 8:
+            angle_rocket_checklist.append("checkmark_9")
+    if check_end:
+        angle_text = font.render(f"Ракета вышла на целевую орбиту!", True, (100, 255, 100))
+        win.blit(angle_text, (275, 10))
+
     pygame.display.update()
 
     # Проверка, закончилась ли музыка
@@ -175,6 +232,9 @@ while running:
     # Обновление скорости с ускорением
     if velocity < 11:
         velocity += 0.002
+
+    if velocity > 10.99:
+        check_end = True
 
     clock.tick(60)
 
