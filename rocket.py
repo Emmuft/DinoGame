@@ -249,7 +249,7 @@ while running:
     if velocity < 11:
         velocity += 0.002
 
-    if velocity > 10.99:
+    if velocity > 10.99: # проверка на скорость
         check_end = True
 
 
