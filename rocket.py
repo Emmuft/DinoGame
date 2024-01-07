@@ -56,6 +56,7 @@ angle_rocket_checklist = list()
 check_end = False
 color_value = 255
 color_text_value = 0
+rocket_scale = 1.0
 
 # Настройка переменных для вращения
 angle_yaw = 0  # Начальный угол
@@ -97,12 +98,22 @@ while running:
                                         pygame.image.load(os.path.join("data", "angara_sep_2.png")),
                                         pygame.image.load(os.path.join("data", "angara_sep_3.png"))])
             flag_buster = True
-        elif 4.8 < velocity:
+        elif (4.8 < velocity) and check_end == False:
             rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_three_stage_1.png")),
                                         pygame.image.load(os.path.join("data", "angara_three_stage_2.png")),
                                         pygame.image.load(os.path.join("data", "angara_three_stage_3.png"))])
 
             flag_stage = True
+        elif check_end and len(angle_rocket_checklist) != 9:
+            if rocket_scale > 0:  # Пока размер больше нуля
+                rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
+                rocket_scale -= 0.01  # Уменьшаем размер спрайта на каждой итерации
+                rocket_img = pygame.transform.scale(rocket_img, (
+                    int(rocket_img.get_width() * rocket_scale), int(rocket_img.get_height() * rocket_scale)))
+            else:
+                rocket_img = pygame.image.load(os.path.join("data", "angara.png"))
+        elif check_end and len(angle_rocket_checklist) == 9:
+            rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
         else:
             rocket_img = random.choice(rocket_images)
         if velocity > 3.6:
