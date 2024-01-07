@@ -11,28 +11,28 @@ win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Moon Dino")
 # Загрузка изображений ракеты
 
-rocket_images = [pygame.image.load(os.path.join("data", "angara_1.jpg")),
-                 pygame.image.load(os.path.join("data", "angara_2.jpg")),
-                 pygame.image.load(os.path.join("data", "angara_3.jpg"))]
+rocket_images = [pygame.image.load(os.path.join("data", "angara_1.png")),
+                 pygame.image.load(os.path.join("data", "angara_2.png")),
+                 pygame.image.load(os.path.join("data", "angara_3.png"))]
 
 # Установка начального изображения ракеты и позиции
 rocket_img = rocket_images[0]
 rocket_x = width // 2 - rocket_img.get_width() // 2
 rocket_y = height // 2 - rocket_img.get_height() // 2
 
-buster_image = [pygame.image.load(os.path.join("data", "angara_bostersep_left.jpg")), ]
+buster_image = [pygame.image.load(os.path.join("data", "angara_bostersep_left.png")), ]
 
 buster_img = buster_image[0]
 buster_x = width // 2 - buster_img.get_width() // 2
 buster_y = height // 2 - buster_img.get_height() // 2
 
-buster_image_right = [pygame.image.load(os.path.join("data", "angara_bostersep_right.jpg")), ]
+buster_image_right = [pygame.image.load(os.path.join("data", "angara_bostersep_right.png")), ]
 
 buster_img_right = buster_image_right[0]
 buster_x_right = width // 2 - buster_img_right.get_width() // 2
 buster_y_right = height // 2 - buster_img_right.get_height() // 2
 
-stage_image = [pygame.image.load(os.path.join("data", "angara_stage_sep.jpg")), ]
+stage_image = [pygame.image.load(os.path.join("data", "angara_stage_sep.png")), ]
 
 stage_img = stage_image[0]
 stage_x = width // 2 - stage_img.get_width() // 2
@@ -93,14 +93,14 @@ while running:
     # Обновление изображения ракеты каждые 0.5 секунды
     if time.time() - last_time > animation_time:
         if 3 <= velocity < 4.8:
-            rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_sep_1.jpg")),
-                                        pygame.image.load(os.path.join("data", "angara_sep_2.jpg")),
-                                        pygame.image.load(os.path.join("data", "angara_sep_3.jpg"))])
+            rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_sep_1.png")),
+                                        pygame.image.load(os.path.join("data", "angara_sep_2.png")),
+                                        pygame.image.load(os.path.join("data", "angara_sep_3.png"))])
             flag_buster = True
         elif 4.8 < velocity:
-            rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_three_stage_1.jpg")),
-                                        pygame.image.load(os.path.join("data", "angara_three_stage_2.jpg")),
-                                        pygame.image.load(os.path.join("data", "angara_three_stage_3.jpg"))])
+            rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_three_stage_1.png")),
+                                        pygame.image.load(os.path.join("data", "angara_three_stage_2.png")),
+                                        pygame.image.load(os.path.join("data", "angara_three_stage_3.png"))])
 
             flag_stage = True
         else:
@@ -224,7 +224,7 @@ while running:
     if check_end:
         if len(angle_rocket_checklist) == 9:
             angle_text = font.render(f"Ракета вышла на целевую орбиту!", True, (0, 255, 0))
-            win.blit(angle_text, (275, 10))
+            win.blit(angle_text, (250, 10))
         else:
             angle_text = font.render(f"Ракета не вышла на целевую орбиту!", True, (255, 0, 0))
             win.blit(angle_text, (235, 10))
