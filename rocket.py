@@ -8,7 +8,7 @@ pygame.init()
 # Установка дисплея
 width, height = 900, 500
 win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Moon Dino")
+pygame.display.set_caption("DinoGame")
 # Загрузка изображений ракеты
 
 rocket_images = [pygame.image.load(os.path.join("data", "angara_1.png")),
@@ -66,8 +66,8 @@ velocity = 0  # Начальная скорость
 background_color = (255, 255, 255)  # white color
 
 # Воспроизведение музыки на фоне
-pygame.mixer.music.load(os.path.join("data_music", "rocket.mp3"))
-pygame.mixer.music.play(-1)  # -1 для зацикливания воспроизведения
+pygame.mixer.music.load(os.path.join("data_sound", "music.mp3")) #music of misha lexperience
+pygame.mixer.music.play(1)
 
 # Основной цикл
 running = True
