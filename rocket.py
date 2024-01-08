@@ -38,6 +38,12 @@ stage_img = stage_image[0]
 stage_x = width // 2 - stage_img.get_width() // 2
 stage_y = height // 2 - stage_img.get_height() // 2
 
+bennu_image = [pygame.image.load(os.path.join("data", "bennu.png")), ]
+
+bennu_img = bennu_image[0]
+bennu_x = 500
+bennu_y = 500
+
 
 # Настройка часов
 clock = pygame.time.Clock()
@@ -78,6 +84,8 @@ engine_ignition = False
 asteroid_velocity_text_visible = True
 asteroid_velocity = 1
 flag_impulse = False
+approach_asteroid = False
+flag_hz_chto_eto = False
 
 # Настройка переменных для вращения
 angle_yaw = 0  # Начальный угол
@@ -97,6 +105,7 @@ music_playing = True  # Добавляем флаг для отслеживан�
 buster_offset = 0  # Начальное смещение бустера
 stage_offset = 0  # Начальное смещение ступени
 buster_offset_right = 0  # Начальное смещение правого бустера
+bennu_offset = 0  # Начальное смещение астероида
 while running:
 
     if color_value > 0:
@@ -135,9 +144,9 @@ while running:
                     int(rocket_img.get_width() * rocket_scale), int(rocket_img.get_height() * rocket_scale)))
             else:
                 rocket_img = pygame.image.load(os.path.join("data", "angara.png"))
-        elif check_end and len(angle_rocket_checklist) == 9 and not engine_ignition:
+        elif (check_end and len(angle_rocket_checklist) == 9) and not engine_ignition:
             rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
-        else:
+        elif velocity < 3:
             rocket_img = random.choice(rocket_images)
         if velocity > 3.6:
             flag_buster = False
@@ -146,6 +155,7 @@ while running:
         last_time = time.time()
 
     # Отображение изображения ракеты с вращением
+
     rotated_rocket = pygame.transform.rotate(rocket_img, angle_yaw)
     rocket_rect = rotated_rocket.get_rect(
         center=(rocket_x + rocket_img.get_width() // 2, rocket_y + rocket_img.get_height() // 2))
@@ -201,7 +211,6 @@ while running:
         if stage_x > 0:
             stage_x -= 1  # Движение бустера влево
             stage_offset += 1  # Увеличение смещения бустера
-    # Обновление дисплея
     if 0 < velocity < 1:
         angle_text = font.render(f"Требуемый угол: {0} градусов", True, (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
@@ -346,8 +355,22 @@ while running:
                                 win.blit(asteroid_velocity_text, (width - asteroid_velocity_text.get_width() - 10, 10))
                             if asteroid_velocity > 3:
                                 asteroid_velocity_text_visible = False
+                                approach_asteroid = True
                                 flag_impulse = False
                                 engine_ignition = False
+
+                        if approach_asteroid:
+                            rocket_x = 250
+                            rocket_y = 10
+                            bennu = pygame.transform.rotate(bennu_img, 0)
+                            bennu_rect = bennu.get_rect(
+                                center=(bennu_x + bennu_img.get_width() // 2, bennu_y + bennu_img.get_height() // 2))
+                            win.blit(bennu, bennu_rect.topleft)
+                            bennu_y -= 1
+                            bennu_x -= 1  # Движение бустера влево
+                            bennu_offset += 1  # Увеличение смещения бустера
+
+
 
         else:
             skip_text = font.render(f"Ракета не вышла на целевую орбиту!", True, (255, 0, 0))
@@ -381,7 +404,7 @@ while running:
         check_end = True
 
     if flag_impulse:
-        asteroid_velocity += 0.0007
+        asteroid_velocity += 0.001
 
 
     clock.tick(60)
