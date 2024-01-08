@@ -42,7 +42,7 @@ stage_y = height // 2 - stage_img.get_height() // 2
 # Настройка часов
 clock = pygame.time.Clock()
 
-# Настройка переменных для анимации
+# Настройка переменных
 animation_time = 0.02
 last_time = 0
 buster_angle_yaw = 0
@@ -57,6 +57,27 @@ check_end = False
 color_value = 255
 color_text_value = 0
 rocket_scale = 1.0
+moon_button_visible = True
+asteroid_button_visible = True
+angle_text_visible = True
+velocity_text_visible = True
+check_text_visible = True
+rocket_visible = True
+moon_next = False
+asteroid_next = False
+flag_time = True
+red_asteroid = 0
+blue_asteroid = 255
+red_moon = 0
+blue_moon = 255
+angle_switch = True
+engine_button_visible = True
+red_engine = 0
+blue_engine = 255
+engine_ignition = False
+asteroid_velocity_text_visible = True
+asteroid_velocity = 1
+flag_impulse = False
 
 # Настройка переменных для вращения
 angle_yaw = 0  # Начальный угол
@@ -98,12 +119,14 @@ while running:
                                         pygame.image.load(os.path.join("data", "angara_sep_2.png")),
                                         pygame.image.load(os.path.join("data", "angara_sep_3.png"))])
             flag_buster = True
-        elif (4.8 < velocity) and check_end == False:
+        elif ((4.8 < velocity) and check_end == False) or engine_ignition:
             rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_three_stage_1.png")),
                                         pygame.image.load(os.path.join("data", "angara_three_stage_2.png")),
                                         pygame.image.load(os.path.join("data", "angara_three_stage_3.png"))])
 
             flag_stage = True
+        elif not rocket_visible:
+            rocket_img = pygame.image.load(os.path.join("data", "angara.png"))
         elif check_end and len(angle_rocket_checklist) != 9:
             if rocket_scale > 0:  # Пока размер больше нуля
                 rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
@@ -112,7 +135,7 @@ while running:
                     int(rocket_img.get_width() * rocket_scale), int(rocket_img.get_height() * rocket_scale)))
             else:
                 rocket_img = pygame.image.load(os.path.join("data", "angara.png"))
-        elif check_end and len(angle_rocket_checklist) == 9:
+        elif check_end and len(angle_rocket_checklist) == 9 and not engine_ignition:
             rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
         else:
             rocket_img = random.choice(rocket_images)
@@ -127,14 +150,14 @@ while running:
     rocket_rect = rotated_rocket.get_rect(
         center=(rocket_x + rocket_img.get_width() // 2, rocket_y + rocket_img.get_height() // 2))
     win.blit(rotated_rocket, rocket_rect.topleft)
-
-    # Отображение угла вверху экрана
-    angle_text = font.render(f"Угол: {int(-angle_yaw)} градусов", True, (color_text_value, color_text_value, color_text_value))
-    win.blit(angle_text, (10, 10))
-
-    # Отображение скорости в верхнем правом углу
-    velocity_text = font.render(f"Скорость: {velocity:.2f}", True, (color_text_value, color_text_value, color_text_value))
-    win.blit(velocity_text, (width - velocity_text.get_width() - 10, 10))
+    if angle_text_visible:
+        # Отображение угла вверху экрана
+        angle_text = font.render(f"Угол: {int(-angle_yaw)} градусов", True, (color_text_value, color_text_value, color_text_value))
+        win.blit(angle_text, (10, 10))
+    if velocity_text_visible:
+        # Отображение скорости в верхнем правом углу
+        velocity_text = font.render(f"Скорость: {velocity:.2f}", True, (color_text_value, color_text_value, color_text_value))
+        win.blit(velocity_text, (width - velocity_text.get_width() - 10, 10))
 
     if flag_buster:
         buster_angle_yaw = angle_yaw + buster_angle_variable
@@ -234,12 +257,101 @@ while running:
             angle_rocket_checklist.append("checkmark_9")
     if check_end:
         if len(angle_rocket_checklist) == 9:
-            angle_text = font.render(f"Ракета вышла на целевую орбиту!", True, (0, 255, 0))
-            win.blit(angle_text, (250, 10))
-        else:
-            angle_text = font.render(f"Ракета не вышла на целевую орбиту!", True, (255, 0, 0))
-            win.blit(angle_text, (235, 10))
+            if check_text_visible:
+                angle_text = font.render(f"Ракета вышла на целевую орбиту!", True, (0, 255, 0))
+                win.blit(angle_text, (250, 10))
+            if moon_button_visible:
+                # Создание кнопки "Эвакуироваться на луну"
+                moon_button = pygame.Rect(245, 150, 410, 50)  # Создание прямоугольника для кнопки
+                pygame.draw.rect(win, (red_moon, 0, blue_moon), moon_button)  # Отрисовка кнопки
+                font = pygame.font.SysFont(None, 36)
+                moon_text = font.render("Эвакуироваться на луну", True, (255, 255, 255))  # Создание текста кнопки
+                win.blit(moon_text, (300, 160))  # Отображение текста кнопки
 
+            if asteroid_button_visible:
+                # Создание кнопки "Изменить траекторию астероида"
+                asteroid_button = pygame.Rect(245, 300, 410, 50)  # Создание прямоугольника для кнопки
+                pygame.draw.rect(win, (red_asteroid, 0, blue_asteroid), asteroid_button)  # Отрисовка кнопки
+                asteroid_text = font.render("Изменить траекторию астероида", True, (255, 255, 255))  # Создание текста кнопки
+                win.blit(asteroid_text, (255, 310))  # Отображение текста кнопки
+
+            # Обработка нажатий кнопок
+            mouse_pos = pygame.mouse.get_pos()
+            if moon_button.collidepoint(mouse_pos):
+                red_moon = 255
+                blue_moon = 0
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    moon_next = True
+            else:
+                red_moon = 0
+                blue_moon = 255
+
+            if asteroid_button.collidepoint(mouse_pos):
+                red_asteroid = 255
+                blue_asteroid = 0
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    asteroid_next = True
+            else:
+                red_asteroid = 0
+                blue_asteroid = 255
+
+            if moon_next:
+                moon_button_visible = False
+                asteroid_button_visible = False
+                angle_text_visible = False
+                check_text_visible = False
+                velocity_text_visible = False
+                rocket_visible = False
+                pass  # луна от Вики
+
+            elif asteroid_next:
+                if flag_time:
+                    seconds = time.time()
+                    flag_time = False
+                if time.time() - seconds < 1.5:
+                    moon_button_visible = False
+                    asteroid_button_visible = False
+                    angle_text_visible = False
+                    check_text_visible = False
+                    velocity_text_visible = False
+                    rocket_visible = False
+                    skip_text = font.render(f"спустя одну неделю...", True,(color_text_value, color_text_value, color_text_value))
+                    win.blit(skip_text, (295, 240))
+                    text_skip_visible = False
+                else:
+                    rocket_visible = True
+                    angle_text_visible = True
+                    if int(angle_yaw) != -145:
+                        angle_text = font.render(f"Встаньте по движению(145°)", True, (255, 255, 255))
+                        win.blit(angle_text, (525, 10))
+                    else:
+                        angle_switch = False
+                        if engine_button_visible:
+                            engine_button = pygame.Rect(50, 150, 800, 50)  # Создание прямоугольника для кнопки
+                            pygame.draw.rect(win, (red_engine, 0, blue_engine), engine_button)  # Отрисовка кнопки
+                            font = pygame.font.SysFont(None, 36)
+                            engine_text = font.render('Нажмите клавишу "i" что бы выдать импульс на ускорение!', True,(255, 255, 255))  # Создание текста кнопки
+                            win.blit(engine_text, (75, 160))  # Отображение текста кнопки
+
+                        key_ignition = pygame.key.get_pressed()
+                        if key_ignition[pygame.K_i]:
+                            flag_impulse = True
+                            engine_button_visible = False
+                            engine_ignition = True
+
+                        if flag_impulse:
+                            if asteroid_velocity_text_visible:
+                                # Отображение скорости в верхнем правом углу
+                                asteroid_velocity_text = font.render(f"Скорость относительно астероида: {asteroid_velocity:.2f}", True, (color_text_value, color_text_value, color_text_value))
+                                win.blit(asteroid_velocity_text, (width - asteroid_velocity_text.get_width() - 10, 10))
+                            if asteroid_velocity > 3:
+                                asteroid_velocity_text_visible = False
+                                flag_impulse = False
+                                engine_ignition = False
+
+        else:
+            skip_text = font.render(f"Ракета не вышла на целевую орбиту!", True, (255, 0, 0))
+            win.blit(skip_text, (235, 10))
     pygame.display.update()
 
     # Проверка, закончилась ли музыка
@@ -249,12 +361,17 @@ while running:
 
     # Управление вращением ракеты
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
+    if keys[pygame.K_a] and angle_switch:
         if angle_yaw < 90:
             angle_yaw += 0.15
-    if keys[pygame.K_d]:
-        if angle_yaw > -90:
+    if keys[pygame.K_d] and angle_switch:
+        if angle_yaw > -145:
             angle_yaw -= 0.15
+    if keys[pygame.K_c] and keys[pygame.K_h]:
+        velocity = 10.99
+        angle_rocket_checklist = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        angle_yaw = -90
+        color_value = 0
 
     # Обновление скорости с ускорением
     if velocity < 11:
@@ -263,7 +380,10 @@ while running:
     if velocity > 10.99: # проверка на скорость
         check_end = True
 
+    if flag_impulse:
+        asteroid_velocity += 0.0007
 
-    clock.tick(60)
+
+    clock.tick(180)
 
 pygame.quit()
