@@ -384,6 +384,6 @@ while running:
         asteroid_velocity += 0.0007
 
 
-    clock.tick(180)
+    clock.tick(60)
 
 pygame.quit()
