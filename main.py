@@ -283,6 +283,19 @@ while running:
             clock.tick(30)
             pygame.display.update()
 
+    def get_max_points():
+        f = open('data/max_points.txt', 'r')
+        point = f.readline().strip()
+        f.close()
+        return point
+
+
+    def write_max_points(point):
+        f = open('data/max_points.txt', 'w+')
+        f.write(str(point))
+        f.close()
+
+    write_max_points(0)
 
     def menu(death_count):
         global points
@@ -294,15 +307,27 @@ while running:
             if death_count == 0:
                 text = font.render("Нажмите на любую кнопку", True, (0, 0, 0))
             elif death_count > 0:
+                max_points = get_max_points()
+                if not max_points:
+                    write_max_points(points)
+                    max_points = points
+                elif int(max_points) < points:
+                    write_max_points(points)
+                    max_points = points
+
                 text = font.render("Нажмите на любую кнопку", True, (0, 0, 0))
                 score = font.render("Ваш результат: " + str(points), True, (0, 0, 0))
+                max_score = font.render('Лучший результат: ' + str(max_points), True, (0, 0, 0))
                 scoreRect = score.get_rect()
-                scoreRect.center = (WIDTH // 2, HEIGHT // 2 + 50)
+                max_score_rect = max_score.get_rect()
+                scoreRect.center = (WIDTH // 2, HEIGHT // 2 + 10)
+                max_score_rect.center = (WIDTH // 2, HEIGHT // 2 + 75)
                 SCREEN.blit(score, scoreRect)
+                SCREEN.blit(max_score, max_score_rect)
             textRect = text.get_rect()
-            textRect.center = (WIDTH // 2, HEIGHT // 2)
+            textRect.center = (WIDTH // 2, HEIGHT // 2 - 30)
             SCREEN.blit(text, textRect)
-            SCREEN.blit(DEATH, (WIDTH // 2 - 86, HEIGHT // 2 - 96))
+            SCREEN.blit(DEATH, (WIDTH // 2 - 86, HEIGHT // 2 - 131))
             SCREEN.blit(BIG_CACTUS[0], (WIDTH // 2 - 300, HEIGHT // 2 + 153))
             SCREEN.blit(BIG_CACTUS[1], (WIDTH // 2 + 200, HEIGHT // 2 + 153))
             SCREEN.blit(BIG_CACTUS[2], (WIDTH // 2 + 20, HEIGHT // 2 + 153))
