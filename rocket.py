@@ -2,6 +2,7 @@ import pygame
 import os
 import time
 import random
+
 # Инициализация Pygame
 pygame.init()
 
@@ -41,9 +42,14 @@ stage_y = height // 2 - stage_img.get_height() // 2
 bennu_image = [pygame.image.load(os.path.join("data", "bennu.png")), ]
 
 bennu_img = bennu_image[0]
-bennu_x = 500
-bennu_y = 500
+bennu_x = 800
+bennu_y = 800
 
+dino_image = [pygame.image.load(os.path.join("data", "dino_rip.png")), ]
+
+dino_img = dino_image[0]
+dino_x = 450
+dino_y = 250
 
 # Настройка часов
 clock = pygame.time.Clock()
@@ -72,6 +78,8 @@ rocket_visible = True
 moon_next = False
 asteroid_next = False
 flag_time = True
+flag_time_2 = True
+seconds_2 = 0
 red_asteroid = 0
 blue_asteroid = 255
 red_moon = 0
@@ -86,6 +94,10 @@ asteroid_velocity = 1
 flag_impulse = False
 approach_asteroid = False
 flag_hz_chto_eto = False
+impact_visible = True
+flag_time_impact = True
+flag_back = True
+asteroid_visible = True
 
 # Настройка переменных для вращения
 angle_yaw = 0  # Начальный угол
@@ -96,7 +108,7 @@ velocity = 0  # Начальная скорость
 background_color = (255, 255, 255)  # white color
 
 # Воспроизведение музыки на фоне
-pygame.mixer.music.load(os.path.join("data_sound", "music.mp3")) #music of misha lexperience
+pygame.mixer.music.load(os.path.join("data_sound", "music.mp3"))  # music of misha lexperience
 pygame.mixer.music.play(1)
 
 # Основной цикл
@@ -108,7 +120,7 @@ buster_offset_right = 0  # Начальное смещение правого б
 bennu_offset = 0  # Начальное смещение астероида
 while running:
 
-    if color_value > 0:
+    if color_value > 0 and asteroid_visible:
         color_value -= 0.075
     background_color = (color_value, color_value, color_value)
 
@@ -162,11 +174,13 @@ while running:
     win.blit(rotated_rocket, rocket_rect.topleft)
     if angle_text_visible:
         # Отображение угла вверху экрана
-        angle_text = font.render(f"Угол: {int(-angle_yaw)} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Угол: {int(-angle_yaw)} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (10, 10))
     if velocity_text_visible:
         # Отображение скорости в верхнем правом углу
-        velocity_text = font.render(f"Скорость: {velocity:.2f}", True, (color_text_value, color_text_value, color_text_value))
+        velocity_text = font.render(f"Скорость: {velocity:.2f}", True,
+                                    (color_text_value, color_text_value, color_text_value))
         win.blit(velocity_text, (width - velocity_text.get_width() - 10, 10))
 
     if flag_buster:
@@ -186,7 +200,6 @@ while running:
                 buster_y_right + buster_img_right.get_height() // 2))
         win.blit(buster_sep_right, buster_rect_right.topleft)
 
-
         if buster_y < height:
             buster_y += 1  # Движение бустера вниз
         if buster_y_right < height:
@@ -202,7 +215,7 @@ while running:
     if flag_stage:
         stage_angle_yaw = angle_yaw + stage_angle_variable
         stage_angle_variable += 0.2
-        stage_sep = pygame.transform.rotate(stage_img,stage_angle_yaw)
+        stage_sep = pygame.transform.rotate(stage_img, stage_angle_yaw)
         stage_rect = stage_sep.get_rect(
             center=(stage_x + stage_img.get_width() // 2, stage_y + stage_img.get_height() // 2))
         win.blit(stage_sep, stage_rect.topleft)
@@ -212,55 +225,64 @@ while running:
             stage_x -= 1  # Движение бустера влево
             stage_offset += 1  # Увеличение смещения бустера
     if 0 < velocity < 1:
-        angle_text = font.render(f"Требуемый угол: {0} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {0} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == 0 and len(angle_rocket_checklist) == 0:
             angle_rocket_checklist.append("checkmark_1")
 
     if 1 < velocity < 2:
-        angle_text = font.render(f"Требуемый угол: {15} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {15} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -15 and len(angle_rocket_checklist) == 1:
             angle_rocket_checklist.append("checkmark_2")
 
     if 2 < velocity < 3:
-        angle_text = font.render(f"Требуемый угол: {30} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {30} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -30 and len(angle_rocket_checklist) == 2:
             angle_rocket_checklist.append("checkmark_3")
 
     if 3 < velocity < 4:
-        angle_text = font.render(f"Требуемый угол: {45} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {45} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -45 and len(angle_rocket_checklist) == 3:
             angle_rocket_checklist.append("checkmark_4")
 
     if 4 < velocity < 5:
-        angle_text = font.render(f"Требуемый угол: {60} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {60} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -60 and len(angle_rocket_checklist) == 4:
             angle_rocket_checklist.append("checkmark_5")
 
     if 5 < velocity < 6:
-        angle_text = font.render(f"Требуемый угол: {75} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {75} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -75 and len(angle_rocket_checklist) == 5:
             angle_rocket_checklist.append("checkmark_6")
 
     if 6 < velocity < 7:
-        angle_text = font.render(f"Требуемый угол: {80} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {80} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -80 and len(angle_rocket_checklist) == 6:
             angle_rocket_checklist.append("checkmark_7")
 
     if 7 < velocity < 8:
-        angle_text = font.render(f"Требуемый угол: {85} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {85} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -85 and len(angle_rocket_checklist) == 7:
             angle_rocket_checklist.append("checkmark_8")
 
     if 8 < velocity < 11:
-        angle_text = font.render(f"Требуемый угол: {90} градусов", True, (color_text_value, color_text_value, color_text_value))
+        angle_text = font.render(f"Требуемый угол: {90} градусов", True,
+                                 (color_text_value, color_text_value, color_text_value))
         win.blit(angle_text, (275, 10))
         if int(angle_yaw) == -90 and len(angle_rocket_checklist) == 8:
             angle_rocket_checklist.append("checkmark_9")
@@ -281,7 +303,8 @@ while running:
                 # Создание кнопки "Изменить траекторию астероида"
                 asteroid_button = pygame.Rect(245, 300, 410, 50)  # Создание прямоугольника для кнопки
                 pygame.draw.rect(win, (red_asteroid, 0, blue_asteroid), asteroid_button)  # Отрисовка кнопки
-                asteroid_text = font.render("Изменить траекторию астероида", True, (255, 255, 255))  # Создание текста кнопки
+                asteroid_text = font.render("Изменить траекторию астероида", True,
+                                            (255, 255, 255))  # Создание текста кнопки
                 win.blit(asteroid_text, (255, 310))  # Отображение текста кнопки
 
             # Обработка нажатий кнопок
@@ -324,23 +347,26 @@ while running:
                     check_text_visible = False
                     velocity_text_visible = False
                     rocket_visible = False
-                    skip_text = font.render(f"спустя одну неделю...", True,(color_text_value, color_text_value, color_text_value))
+                    skip_text = font.render(f"спустя одну неделю...", True,
+                                            (color_text_value, color_text_value, color_text_value))
                     win.blit(skip_text, (295, 240))
                     text_skip_visible = False
                 else:
-                    rocket_visible = True
-                    angle_text_visible = True
                     if int(angle_yaw) != -145:
-                        angle_text = font.render(f"Встаньте по движению(145°)", True, (255, 255, 255))
-                        win.blit(angle_text, (525, 10))
+                        rocket_visible = True
+                        angle_text_visible = True
+                        angle_text = font.render(f"Встаньте по  вектору движения(145°)", True, (255, 50, 50))
+                        win.blit(angle_text, (425, 10))
                     else:
                         angle_switch = False
                         if engine_button_visible:
                             engine_button = pygame.Rect(50, 150, 800, 50)  # Создание прямоугольника для кнопки
                             pygame.draw.rect(win, (red_engine, 0, blue_engine), engine_button)  # Отрисовка кнопки
                             font = pygame.font.SysFont(None, 36)
-                            engine_text = font.render('Нажмите клавишу "i" что бы выдать импульс на ускорение!', True,(255, 255, 255))  # Создание текста кнопки
+                            engine_text = font.render('Нажмите клавишу "i" что бы выдать импульс на ускорение!', True,
+                                                      (255, 255, 255))  # Создание текста кнопки
                             win.blit(engine_text, (75, 160))  # Отображение текста кнопки
+                            angle_text_visible = False
 
                         key_ignition = pygame.key.get_pressed()
                         if key_ignition[pygame.K_i]:
@@ -351,7 +377,9 @@ while running:
                         if flag_impulse:
                             if asteroid_velocity_text_visible:
                                 # Отображение скорости в верхнем правом углу
-                                asteroid_velocity_text = font.render(f"Скорость относительно астероида: {asteroid_velocity:.2f}", True, (color_text_value, color_text_value, color_text_value))
+                                asteroid_velocity_text = font.render(
+                                    f"Скорость относительно астероида: {asteroid_velocity:.2f}", True,
+                                    (color_text_value, color_text_value, color_text_value))
                                 win.blit(asteroid_velocity_text, (width - asteroid_velocity_text.get_width() - 10, 10))
                             if asteroid_velocity > 3:
                                 asteroid_velocity_text_visible = False
@@ -360,15 +388,51 @@ while running:
                                 engine_ignition = False
 
                         if approach_asteroid:
-                            rocket_x = 250
-                            rocket_y = 10
-                            bennu = pygame.transform.rotate(bennu_img, 0)
-                            bennu_rect = bennu.get_rect(
-                                center=(bennu_x + bennu_img.get_width() // 2, bennu_y + bennu_img.get_height() // 2))
-                            win.blit(bennu, bennu_rect.topleft)
-                            bennu_y -= 1
-                            bennu_x -= 1  # Движение бустера влево
-                            bennu_offset += 1  # Увеличение смещения бустера
+                            if flag_time_2:
+                                seconds_2 = time.time()
+                                flag_time_2 = False
+                            if time.time() - seconds_2 < 3:
+                                rocket_visible = False
+                                skip_text = font.render(f"Столкновение через три... два... один...", True,
+                                                        (color_text_value, color_text_value, color_text_value))
+                                win.blit(skip_text, (225, 240))
+                            else:
+                                rocket_visible = True
+                                rocket_x = 0
+                                rocket_y = 0
+                                if asteroid_visible:
+                                    bennu = pygame.transform.rotate(bennu_img, 0)
+                                    bennu_rect = bennu.get_rect(
+                                        center=(
+                                        bennu_x + bennu_img.get_width() // 4, bennu_y + bennu_img.get_height() // 4))
+                                    win.blit(bennu, bennu_rect.topleft)
+                                    bennu_y -= 3
+                                    bennu_x -= 3
+                                    bennu_offset += 4
+                                    if rocket_rect.colliderect(bennu_rect):
+                                        if flag_time_impact:
+                                            seconds_impact = time.time()
+                                            flag_time_impact = False
+                                        if time.time() - seconds_impact > 0.8:
+                                            asteroid_visible = False
+                                else:
+                                    dino = pygame.transform.rotate(dino_img, 0)
+                                    dino_rect = dino.get_rect(center=(
+                                    dino_x + dino_img.get_width() // 4, dino_y + dino_img.get_height() // 4))
+                                    win.blit(dino, dino_rect.topleft)
+                                    engine_text = font.render('Press "F" to Pay Respects',
+                                                              True,
+                                                              (255, 255, 255))  # Создание текста кнопки
+                                    win.blit(engine_text, (75, 160))  # Отображение текста кнопки
+                                    rocket_visible = False
+                                    if key_ignition[pygame.K_f]:
+                                        quit()
+                                    if flag_back:
+                                        color_value = 255
+                                        flag_back = False
+                                    if color_value > 1:
+                                        color_value -= 1
+
 
 
 
@@ -400,12 +464,11 @@ while running:
     if velocity < 11:
         velocity += 0.002
 
-    if velocity > 10.99: # проверка на скорость
+    if velocity > 10.99:  # проверка на скорость
         check_end = True
 
     if flag_impulse:
         asteroid_velocity += 0.001
-
 
     clock.tick(60)
 
