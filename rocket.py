@@ -12,7 +12,7 @@ win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("DinoGame")
 # Загрузка изображений ракеты
 
-rocket_images = [pygame.image.load(os.path.join("data", "angara_1.png")),
+rocket_images = [pygame.image.load(os.path.join("data", "angara_0.png")),
                  pygame.image.load(os.path.join("data", "angara_2.png")),
                  pygame.image.load(os.path.join("data", "angara_3.png"))]
 
