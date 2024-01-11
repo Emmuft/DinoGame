@@ -70,12 +70,12 @@ while running:
             if self.step_index >= 10:
                 self.step_index = 0
 
-            if userInput[pygame.K_UP] and not self.dino_jump:
+            if (userInput[pygame.K_UP] or userInput[pygame.K_w]) and not self.dino_jump:
                 music_jump.play()
                 self.dino_duck = False
                 self.dino_run = False
                 self.dino_jump = True
-            elif userInput[pygame.K_DOWN] and not self.dino_jump:
+            elif (userInput[pygame.K_DOWN] or userInput[pygame.K_s]) and not self.dino_jump:
                 self.dino_duck = True
                 self.dino_run = False
                 self.dino_jump = False
