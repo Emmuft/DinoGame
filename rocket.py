@@ -3,6 +3,8 @@ import os
 import time
 import random
 
+import rocket
+
 # Инициализация Pygame
 pygame.init()
 
@@ -12,40 +14,40 @@ win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("DinoGame")
 # Загрузка изображений ракеты
 
-rocket_images = [pygame.image.load(os.path.join("data", "angara_0.png")),
-                 pygame.image.load(os.path.join("data", "angara_2.png")),
-                 pygame.image.load(os.path.join("data", "angara_3.png"))]
+rocket_images = [pygame.image.load(os.path.join("data/Rocket", "angara_0.png")),
+                 pygame.image.load(os.path.join("data/Rocket", "angara_2.png")),
+                 pygame.image.load(os.path.join("data/Rocket", "angara_3.png"))]
 
 # Установка начального изображения ракеты и позиции
 rocket_img = rocket_images[0]
 rocket_x = width // 2 - rocket_img.get_width() // 2
 rocket_y = height // 2 - rocket_img.get_height() // 2
 
-buster_image = [pygame.image.load(os.path.join("data", "angara_bostersep_left.png")), ]
+buster_image = [pygame.image.load(os.path.join("data/Rocket", "angara_bostersep_left.png")), ]
 
 buster_img = buster_image[0]
 buster_x = width // 2 - buster_img.get_width() // 2
 buster_y = height // 2 - buster_img.get_height() // 2
 
-buster_image_right = [pygame.image.load(os.path.join("data", "angara_bostersep_right.png")), ]
+buster_image_right = [pygame.image.load(os.path.join("data/Rocket", "angara_bostersep_right.png")), ]
 
 buster_img_right = buster_image_right[0]
 buster_x_right = width // 2 - buster_img_right.get_width() // 2
 buster_y_right = height // 2 - buster_img_right.get_height() // 2
 
-stage_image = [pygame.image.load(os.path.join("data", "angara_stage_sep.png")), ]
+stage_image = [pygame.image.load(os.path.join("data/Rocket", "angara_stage_sep.png")), ]
 
 stage_img = stage_image[0]
 stage_x = width // 2 - stage_img.get_width() // 2
 stage_y = height // 2 - stage_img.get_height() // 2
 
-bennu_image = [pygame.image.load(os.path.join("data", "bennu.png")), ]
+bennu_image = [pygame.image.load(os.path.join("data/Rocket", "bennu.png")), ]
 
 bennu_img = bennu_image[0]
 bennu_x = 800
 bennu_y = 800
 
-dino_image = [pygame.image.load(os.path.join("data", "dino_rip.png")), ]
+dino_image = [pygame.image.load(os.path.join("data/Rocket", "dino_rip.png")), ]
 
 dino_img = dino_image[0]
 dino_x = 450
@@ -108,12 +110,11 @@ velocity = 0  # Начальная скорость
 background_color = (255, 255, 255)  # white color
 
 # Воспроизведение музыки на фоне
-pygame.mixer.music.load(os.path.join("data_sound", "music.mp3"))  # music of misha lexperience
-pygame.mixer.music.play(1)
+background_music = pygame.mixer.Sound("data_sound/music.mp3")
+background_music.play(-1)
 
 # Основной цикл
 running = True
-music_playing = True  # Добавляем флаг для отслеживания воспроизведения музыки
 buster_offset = 0  # Начальное смещение бустера
 stage_offset = 0  # Начальное смещение ступени
 buster_offset_right = 0  # Начальное смещение правого бустера
@@ -136,28 +137,28 @@ while running:
     # Обновление изображения ракеты каждые 0.5 секунды
     if time.time() - last_time > animation_time:
         if 3 <= velocity < 4.8:
-            rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_sep_1.png")),
-                                        pygame.image.load(os.path.join("data", "angara_sep_2.png")),
-                                        pygame.image.load(os.path.join("data", "angara_sep_3.png"))])
+            rocket_img = random.choice([pygame.image.load(os.path.join("data/Rocket", "angara_sep_1.png")),
+                                        pygame.image.load(os.path.join("data/Rocket", "angara_sep_2.png")),
+                                        pygame.image.load(os.path.join("data/Rocket", "angara_sep_3.png"))])
             flag_buster = True
         elif ((4.8 < velocity) and check_end == False) or engine_ignition:
-            rocket_img = random.choice([pygame.image.load(os.path.join("data", "angara_three_stage_1.png")),
-                                        pygame.image.load(os.path.join("data", "angara_three_stage_2.png")),
-                                        pygame.image.load(os.path.join("data", "angara_three_stage_3.png"))])
+            rocket_img = random.choice([pygame.image.load(os.path.join("data/Rocket", "angara_three_stage_1.png")),
+                                        pygame.image.load(os.path.join("data/Rocket", "angara_three_stage_2.png")),
+                                        pygame.image.load(os.path.join("data/Rocket", "angara_three_stage_3.png"))])
 
             flag_stage = True
         elif not rocket_visible:
-            rocket_img = pygame.image.load(os.path.join("data", "angara.png"))
+            rocket_img = pygame.image.load(os.path.join("data/Rocket", "angara.png"))
         elif check_end and len(angle_rocket_checklist) != 9:
             if rocket_scale > 0:  # Пока размер больше нуля
-                rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
+                rocket_img = pygame.image.load(os.path.join("data/Rocket", "angara_three_stage.png"))
                 rocket_scale -= 0.01  # Уменьшаем размер спрайта на каждой итерации
                 rocket_img = pygame.transform.scale(rocket_img, (
                     int(rocket_img.get_width() * rocket_scale), int(rocket_img.get_height() * rocket_scale)))
             else:
-                rocket_img = pygame.image.load(os.path.join("data", "angara.png"))
+                rocket_img = pygame.image.load(os.path.join("data/Rocket", "angara.png"))
         elif (check_end and len(angle_rocket_checklist) == 9) and not engine_ignition:
-            rocket_img = pygame.image.load(os.path.join("data", "angara_three_stage.png"))
+            rocket_img = pygame.image.load(os.path.join("data/Rocket", "angara_three_stage.png"))
         elif velocity < 3:
             rocket_img = random.choice(rocket_images)
         if velocity > 3.6:
@@ -291,6 +292,7 @@ while running:
             if check_text_visible:
                 angle_text = font.render(f"Ракета вышла на целевую орбиту!", True, (0, 255, 0))
                 win.blit(angle_text, (250, 10))
+
             if moon_button_visible:
                 # Создание кнопки "Эвакуироваться на луну"
                 moon_button = pygame.Rect(245, 150, 410, 50)  # Создание прямоугольника для кнопки
@@ -334,7 +336,10 @@ while running:
                 check_text_visible = False
                 velocity_text_visible = False
                 rocket_visible = False
-                pass  # луна от Вики
+                background_music.stop()
+                import Moon
+
+                Moon.main()
 
             elif asteroid_next:
                 if flag_time:
@@ -347,7 +352,7 @@ while running:
                     check_text_visible = False
                     velocity_text_visible = False
                     rocket_visible = False
-                    skip_text = font.render(f"спустя одну неделю...", True,
+                    skip_text = font.render(f"Cпустя одну неделю...", True,
                                             (color_text_value, color_text_value, color_text_value))
                     win.blit(skip_text, (295, 240))
                     text_skip_visible = False
@@ -404,7 +409,8 @@ while running:
                                     bennu = pygame.transform.rotate(bennu_img, 0)
                                     bennu_rect = bennu.get_rect(
                                         center=(
-                                        bennu_x + bennu_img.get_width() // 4, bennu_y + bennu_img.get_height() // 4))
+                                            bennu_x + bennu_img.get_width() // 4,
+                                            bennu_y + bennu_img.get_height() // 4))
                                     win.blit(bennu, bennu_rect.topleft)
                                     bennu_y -= 3
                                     bennu_x -= 3
@@ -418,7 +424,7 @@ while running:
                                 else:
                                     dino = pygame.transform.rotate(dino_img, 0)
                                     dino_rect = dino.get_rect(center=(
-                                    dino_x + dino_img.get_width() // 4, dino_y + dino_img.get_height() // 4))
+                                        dino_x + dino_img.get_width() // 4, dino_y + dino_img.get_height() // 4))
                                     win.blit(dino, dino_rect.topleft)
                                     engine_text = font.render('Press "F" to Pay Respects',
                                                               True,
@@ -439,19 +445,15 @@ while running:
         else:
             skip_text = font.render(f"Ракета не вышла на целевую орбиту!", True, (255, 0, 0))
             win.blit(skip_text, (235, 10))
-    pygame.display.update()
 
-    # Проверка, закончилась ли музыка
-    if not pygame.mixer.music.get_busy() and music_playing:
-        pygame.mixer.music.stop()  # Остановить воспроизведение музыки
-        music_playing = False  # Установить флаг в False, чтобы не пытаться остановить музыку снова
+    pygame.display.update()
 
     # Управление вращением ракеты
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_a] and angle_switch:
+    if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and angle_switch:
         if angle_yaw < 90:
             angle_yaw += 0.15
-    if keys[pygame.K_d] and angle_switch:
+    if (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and angle_switch:
         if angle_yaw > -145:
             angle_yaw -= 0.15
     if keys[pygame.K_c] and keys[pygame.K_h]:
@@ -462,7 +464,7 @@ while running:
 
     # Обновление скорости с ускорением
     if velocity < 11:
-        velocity += 0.002
+        velocity += 0.003
 
     if velocity > 10.99:  # проверка на скорость
         check_end = True

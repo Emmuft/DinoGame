@@ -71,12 +71,12 @@ while running:
             if self.step_index >= 10:
                 self.step_index = 0
 
-            if userInput[pygame.K_UP] and not self.dino_jump:
+            if (userInput[pygame.K_UP] or userInput[pygame.K_w]) and not self.dino_jump:
                 music_jump.play()
                 self.dino_duck = False
                 self.dino_run = False
                 self.dino_jump = True
-            elif userInput[pygame.K_DOWN] and not self.dino_jump:
+            elif (userInput[pygame.K_DOWN] or userInput[pygame.K_s]) and not self.dino_jump:
                 self.dino_duck = True
                 self.dino_run = False
                 self.dino_jump = False
@@ -265,7 +265,7 @@ while running:
                 if player.dino_rect.colliderect(rocket.rect):
                     background_music.stop()
                     pygame.time.delay(150)
-                    vid = Video("music/AnimationRocket.mp4")
+                    vid = Video("data/Prehistory.mp4")
                     vid.set_size((900, 500))
                     while True:
                         vid.draw(SCREEN, (0, 0))
@@ -273,8 +273,8 @@ while running:
                         for event in pygame.event.get():
                             if event.type == pygame.KEYDOWN:
                                 vid.close()
-                                import Moon
-                                Moon.main()
+                                import rocket
+                                rocket.win()
 
             background()
 
@@ -282,6 +282,7 @@ while running:
 
             clock.tick(30)
             pygame.display.update()
+
 
     def get_max_points():
         f = open('data/max_points.txt', 'r')
@@ -295,7 +296,9 @@ while running:
         f.write(str(point))
         f.close()
 
+
     write_max_points(0)
+
 
     def menu(death_count):
         global points
