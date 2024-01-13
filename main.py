@@ -2,13 +2,12 @@ import pygame
 import os
 import random
 from pyvidplayer import Video
-import sys
 
 pygame.init()
 
 HEIGHT = 500
 WIDTH = 900
-FPS = 90
+FPS = 30
 running = True
 clock = pygame.time.Clock()
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -71,12 +70,12 @@ while running:
             if self.step_index >= 10:
                 self.step_index = 0
 
-            if userInput[pygame.K_UP] and not self.dino_jump:
+            if (userInput[pygame.K_UP] or userInput[pygame.K_w]) and not self.dino_jump:
                 music_jump.play()
                 self.dino_duck = False
                 self.dino_run = False
                 self.dino_jump = True
-            elif userInput[pygame.K_DOWN] and not self.dino_jump:
+            elif (userInput[pygame.K_DOWN] or userInput[pygame.K_s]) and not self.dino_jump:
                 self.dino_duck = True
                 self.dino_run = False
                 self.dino_jump = False
@@ -108,8 +107,8 @@ while running:
                 self.dino_jump = False
                 self.jump_vel = self.JUMP_VEL
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
+        def draw(self, screen):
+            screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
 
     class Rocket:
@@ -122,8 +121,8 @@ while running:
         def update(self):
             self.rect.x -= game_speed
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image, self.rect)
+        def draw(self, screen):
+            screen.blit(self.image, self.rect)
 
 
     class Cloud:
@@ -139,14 +138,14 @@ while running:
                 self.x = WIDTH + random.randint(300, 500)
                 self.y = random.randint(50, 300)
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image, (self.x, self.y))
+        def draw(self, screen):
+            screen.blit(self.image, (self.x, self.y))
 
 
     class Obstacle:
-        def __init__(self, image, type):
+        def __init__(self, image, Type):
             self.image = image
-            self.type = type
+            self.type = Type
             self.rect = self.image[self.type].get_rect()
             self.rect.x = WIDTH
 
@@ -155,8 +154,8 @@ while running:
             if self.rect.x < -self.rect.width:
                 obstacles.pop()
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image[self.type], self.rect)
+        def draw(self, screen):
+            screen.blit(self.image[self.type], self.rect)
 
 
     class SmallCactus(Obstacle):
@@ -180,10 +179,10 @@ while running:
             self.rect.y = 250
             self.index = 0
 
-        def draw(self, SCREEN):
+        def draw(self, screen):
             if self.index >= 9:
                 self.index = 0
-            SCREEN.blit(self.image[self.index // 5], self.rect)
+            screen.blit(self.image[self.index // 5], self.rect)
             self.index += 1
 
 
@@ -241,7 +240,7 @@ while running:
             cloud.draw(SCREEN)
             cloud.update()
 
-            if points < 100:
+            if points < 990:
                 if len(obstacles) == 0:
                     if random.randint(0, 2) == 0:
                         obstacles.append(SmallCactus(SMALL_CACTUS))
@@ -259,13 +258,13 @@ while running:
                     death_count += 1
                     menu(death_count)
 
-            if points >= 120:
+            if points >= 1000:
                 rocket.draw(SCREEN)
                 rocket.update()
                 if player.dino_rect.colliderect(rocket.rect):
                     background_music.stop()
                     pygame.time.delay(150)
-                    vid = Video("music/AnimationRocket.mp4")
+                    vid = Video("data/Prehistory.mp4")
                     vid.set_size((900, 500))
                     while True:
                         vid.draw(SCREEN, (0, 0))
@@ -273,8 +272,8 @@ while running:
                         for event in pygame.event.get():
                             if event.type == pygame.KEYDOWN:
                                 vid.close()
-                                import Moon
-                                Moon.main()
+                                import rocket
+                                rocket.win()
 
             background()
 
@@ -282,6 +281,7 @@ while running:
 
             clock.tick(30)
             pygame.display.update()
+
 
     def get_max_points():
         f = open('data/max_points.txt', 'r')
@@ -295,7 +295,9 @@ while running:
         f.write(str(point))
         f.close()
 
+
     write_max_points(0)
+
 
     def menu(death_count):
         global points
