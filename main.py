@@ -2,13 +2,12 @@ import pygame
 import os
 import random
 from pyvidplayer import Video
-import sys
 
 pygame.init()
 
 HEIGHT = 500
 WIDTH = 900
-FPS = 90
+FPS = 30
 running = True
 clock = pygame.time.Clock()
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -108,8 +107,8 @@ while running:
                 self.dino_jump = False
                 self.jump_vel = self.JUMP_VEL
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
+        def draw(self, screen):
+            screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
 
     class Rocket:
@@ -122,8 +121,8 @@ while running:
         def update(self):
             self.rect.x -= game_speed
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image, self.rect)
+        def draw(self, screen):
+            screen.blit(self.image, self.rect)
 
 
     class Cloud:
@@ -139,14 +138,14 @@ while running:
                 self.x = WIDTH + random.randint(300, 500)
                 self.y = random.randint(50, 300)
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image, (self.x, self.y))
+        def draw(self, screen):
+            screen.blit(self.image, (self.x, self.y))
 
 
     class Obstacle:
-        def __init__(self, image, type):
+        def __init__(self, image, Type):
             self.image = image
-            self.type = type
+            self.type = Type
             self.rect = self.image[self.type].get_rect()
             self.rect.x = WIDTH
 
@@ -155,8 +154,8 @@ while running:
             if self.rect.x < -self.rect.width:
                 obstacles.pop()
 
-        def draw(self, SCREEN):
-            SCREEN.blit(self.image[self.type], self.rect)
+        def draw(self, screen):
+            screen.blit(self.image[self.type], self.rect)
 
 
     class SmallCactus(Obstacle):
@@ -180,10 +179,10 @@ while running:
             self.rect.y = 250
             self.index = 0
 
-        def draw(self, SCREEN):
+        def draw(self, screen):
             if self.index >= 9:
                 self.index = 0
-            SCREEN.blit(self.image[self.index // 5], self.rect)
+            screen.blit(self.image[self.index // 5], self.rect)
             self.index += 1
 
 
@@ -241,7 +240,7 @@ while running:
             cloud.draw(SCREEN)
             cloud.update()
 
-            if points < 100:
+            if points < 990:
                 if len(obstacles) == 0:
                     if random.randint(0, 2) == 0:
                         obstacles.append(SmallCactus(SMALL_CACTUS))
@@ -259,7 +258,7 @@ while running:
                     death_count += 1
                     menu(death_count)
 
-            if points >= 120:
+            if points >= 1000:
                 rocket.draw(SCREEN)
                 rocket.update()
                 if player.dino_rect.colliderect(rocket.rect):

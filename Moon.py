@@ -1,13 +1,12 @@
 import pygame
 import os
 import random
-import sys
 
 pygame.init()
 
 HEIGHT = 500
 WIDTH = 900
-FPS = 90
+FPS = 30
 running = True
 clock = pygame.time.Clock()
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -20,10 +19,13 @@ JUMPING = pygame.image.load("data/Dinomoon/DinoJump.png")
 DUCKING = [pygame.image.load("data/Dinomoon/DinoDuck1.png"),
            pygame.image.load("data/Dinomoon/DinoDuck2.png")]
 
-STONE = [pygame.image.load("data/Stone_and_other/RussianFlag.png"),
-         pygame.image.load("data/Stone_and_other/Stone1.png"),
-         pygame.image.load("data/Stone_and_other/Stone2.png"),
-         pygame.image.load("data/Stone_and_other/Stone3.png")]
+STONE = [
+    pygame.image.load("data/Stone_and_other/RussianFlag.png"),
+    pygame.image.load("data/Stone_and_other/Stone1.png"),
+    pygame.image.load("data/Stone_and_other/Stone2.png"),
+    pygame.image.load("data/Stone_and_other/Stone3.png"),
+    pygame.image.load("data/Stone_and_other/i.png"),
+]
 COMET = [pygame.image.load("data/comet/Comet1.png"),
          pygame.image.load("data/comet/Comet2.png"),
          pygame.image.load("data/comet/Comet3.png"),
@@ -127,18 +129,11 @@ while running:
             SCREEN.blit(self.image[self.type], self.rect)
 
 
-    class SmallCactus(Obstacle):
+    class Stone(Obstacle):
         def __init__(self, image):
-            self.type = random.randint(0, 2)
+            self.type = random.randint(0, 4)
             super().__init__(image, self.type)
-            self.rect.y = 325
-
-
-    class LargeCactus(Obstacle):
-        def __init__(self, image):
-            self.type = random.randint(0, 2)
-            super().__init__(image, self.type)
-            self.rect.y = 300
+            self.rect.y = 307
 
 
     class Comet(Obstacle):
@@ -208,7 +203,7 @@ while running:
 
             if len(obstacles) == 0:
                 if random.randint(0, 1) == 0:
-                    obstacles.append(LargeCactus(STONE))
+                    obstacles.append(Stone(STONE))
                 elif random.randint(0, 1) == 1:
                     obstacles.append(Comet(COMET))
             for obstacle in obstacles:
@@ -228,6 +223,7 @@ while running:
             clock.tick(30)
             pygame.display.update()
 
+
     def get_max_points():
         f = open('data/max_points.txt', 'r')
         point = f.readline().strip()
@@ -240,7 +236,10 @@ while running:
         f.write(str(point))
         f.close()
 
+
     write_max_points(0)
+
+
     def menu(death_count):
         global points
         run = True
